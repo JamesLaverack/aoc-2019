@@ -7,7 +7,7 @@ struct Module {
 }
 
 fn fuel_requirement(module: Module) -> u32 {
-    return 0;
+    return module.mass / 3 - 2;
 }
 
 #[cfg(test)]
