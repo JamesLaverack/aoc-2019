@@ -19,6 +19,12 @@ fn main() {
                 .required(true)
                 .index(1)
                 .help("Path to file with module masses")))
+        .subcommand(SubCommand::with_name("day1b")
+            .about("Day one, part B")
+            .arg(Arg::with_name("MODULES_FILE")
+                .required(true)
+                .index(1)
+                .help("Path to file with module masses")))
         .get_matches();
 
     println!("Google Advent of Code 2019");
@@ -39,6 +45,23 @@ fn main() {
                 Ok(total) => total,
             };
             let total_fuel :u32 = modules.into_iter().map(fuel_requirement).sum();
+            println!("Total fuel requirement is {}", total_fuel)
+        }
+        Some("day1b") => {
+            let file_name = matches
+                .subcommand_matches("day1b")
+                .unwrap()
+                .value_of("MODULES_FILE")
+                .unwrap();
+            let file_path = Path::new(file_name);
+
+            println!("Executing day one, part B on file {}", file_path.display());
+
+            let modules = match load_modules(file_path) {
+                Err(why) => panic!("Failed to load modules: {}", why),
+                Ok(total) => total,
+            };
+            let total_fuel :u32 = modules.into_iter().map(recursive_fuel_requirement).sum();
             println!("Total fuel requirement is {}", total_fuel)
         }
         None => println!("Please use a command"),
@@ -69,6 +92,13 @@ fn fuel_requirement(module: Module) -> u32 {
     return if mass_div_three < 2 { 0 } else { mass_div_three - 2 };
 }
 
+fn recursive_fuel_requirement(module: Module) -> u32 {
+    let mass_div_three = module.mass / 3;
+    return if mass_div_three < 2 { 0 } else {
+        let fr = mass_div_three - 2;
+        return fr + recursive_fuel_requirement(Module{mass: fr}) };
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -82,5 +112,12 @@ mod tests {
         assert_eq!(fuel_requirement(Module{mass: 2}), 0);
         assert_eq!(fuel_requirement(Module{mass: 1}), 0);
         assert_eq!(fuel_requirement(Module{mass: 0}), 0);
+    }
+
+    #[test]
+    fn test_recursive_fuel_requirement() {
+        assert_eq!(recursive_fuel_requirement(Module{mass: 14}), 2);
+        assert_eq!(recursive_fuel_requirement(Module{mass: 1969}), 966);
+        assert_eq!(recursive_fuel_requirement(Module{mass: 100756}), 50346);
     }
 }
