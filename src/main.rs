@@ -32,12 +32,13 @@ fn main() {
                 .unwrap();
             let file_path = Path::new(file_name);
 
-            println!("Executing day one, part one on file {}", file_path.display());
+            println!("Executing day one, part A on file {}", file_path.display());
 
-            let total_fuel = match total_fuel_requirement(file_path) {
-                Err(why) => panic!("Failed to calculate total fuel requirement: {}", why),
+            let modules = match load_modules(file_path) {
+                Err(why) => panic!("Failed to load modules: {}", why),
                 Ok(total) => total,
             };
+            let total_fuel :u32 = modules.into_iter().map(fuel_requirement).sum();
             println!("Total fuel requirement is {}", total_fuel)
         }
         None => println!("Please use a command"),
@@ -45,7 +46,7 @@ fn main() {
     }
 }
 
-fn total_fuel_requirement(module_masses: &Path) -> Result<u32, Box<dyn Error>> {
+fn load_modules(module_masses: &Path) -> Result<Vec<Module>, Box<dyn Error>> {
     let file = File::open(module_masses)?;
     let reader = BufReader::new(file);
 
@@ -56,8 +57,7 @@ fn total_fuel_requirement(module_masses: &Path) -> Result<u32, Box<dyn Error>> {
         // Fail if any line fails to parse as a u32, passing back the ParseIntError
         .collect::<Result<Vec<u32>, ParseIntError>>()?.into_iter()
         .map(|mass| Module{mass})
-        .map(fuel_requirement)
-        .sum())
+        .collect())
 }
 
 struct Module {
