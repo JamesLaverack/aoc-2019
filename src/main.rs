@@ -1,5 +1,38 @@
+use std::path::Path;
+use std::fs::File;
+use std::io::{BufReader, BufRead};
+use std::io;
+use std::error::Error;
+use std::num::ParseIntError;
+
 fn main() {
-    println!("Hello, world!");
+    println!("Google Advent of Code 2019");
+
+    let file_name = "day1";
+    let file_path = Path::new(file_name);
+
+    println!("Executing day one, part one on file {}", file_path.display());
+
+    let total_fuel = match total_fuel_requirement(file_path) {
+        Err(why) => panic!("Failed to calculate total fuel requirement: {}", why),
+        Ok(total) => total,
+    };
+    println!("Total fuel requirement is {}", total_fuel)
+}
+
+fn total_fuel_requirement(module_masses: &Path) -> Result<u32, Box<dyn Error>> {
+    let file = File::open(module_masses)?;
+    let reader = BufReader::new(file);
+
+    return Ok(reader.lines()
+        // Fail if any line fails to read, passing back the io::Error
+        .collect::<io::Result<Vec<String>>>()?.into_iter()
+        .map(|s| s.parse::<u32>())
+        // Fail if any line fails to parse as a u32, passing back the ParseIntError
+        .collect::<Result<Vec<u32>, ParseIntError>>()?.into_iter()
+        .map(|mass| Module{mass})
+        .map(fuel_requirement)
+        .sum())
 }
 
 struct Module {
