@@ -23,6 +23,12 @@ fn main() {
                 .required(true)
                 .index(1)
                 .help("Path to file with module masses")))
+        .subcommand(SubCommand::with_name("day2a")
+            .about("Day two, part A")
+            .arg(Arg::with_name("CODE_FILE")
+                .required(true)
+                .index(1)
+                .help("Path to file with intcode instructions")))
         .get_matches();
 
     println!("Google Advent of Code 2019");
@@ -61,6 +67,23 @@ fn main() {
             };
             let total_fuel :u32 = modules.into_iter().map(fuel::recursive_fuel_requirement).sum();
             println!("Total fuel requirement is {}", total_fuel)
+        }
+        Some("day2a") => {
+            let file_name = matches
+                .subcommand_matches("day2a")
+                .unwrap()
+                .value_of("CODE_FILE")
+                .unwrap();
+            let file_path = Path::new(file_name);
+
+            println!("Executing day two, part A on file {}", file_path.display());
+
+            let mut code = match intcode::load(file_path) {
+                Err(why) => panic!("Failed to load code: {}", why),
+                Ok(total) => total,
+            };
+            intcode::run(&mut code);
+            println!("Value at position zero is {}", code[0])
         }
         None => println!("Please use a command"),
         _ => unreachable!()

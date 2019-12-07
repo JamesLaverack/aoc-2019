@@ -5,6 +5,7 @@ use std::error::Error;
 pub fn load(code_file: &Path) -> Result<Vec<u32>, Box<dyn Error>> {
     let code = fs::read_to_string(code_file)?
         .split(",")
+        .map(|s| s.trim())
         .map(|s| s.parse::<u32>())
         .collect::<Result<Vec<u32>, std::num::ParseIntError>>()?;
     return Ok(code)
