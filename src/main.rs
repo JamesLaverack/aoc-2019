@@ -1,6 +1,7 @@
 extern crate clap;
 
 mod fuel;
+mod intcode;
 
 use std::path::Path;
 use clap::{Arg, App, SubCommand};
