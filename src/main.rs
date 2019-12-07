@@ -7,10 +7,10 @@ use std::path::Path;
 use clap::{Arg, App, SubCommand};
 
 fn main() {
-    let matches = App::new("Google Advent of Code 2019 Solver")
+    let matches = App::new("Advent of Code 2019 Solver")
         .version("0.1.0")
         .author("James Laverack <james@jameslaverack.com>")
-        .about("Code solutions to Google's Advent of Code 2019")
+        .about("Code solutions to Advent of Code 2019")
         .subcommand(SubCommand::with_name("day1a")
             .about("Day one, part A")
             .arg(Arg::with_name("MODULES_FILE")
@@ -31,7 +31,7 @@ fn main() {
                 .help("Path to file with intcode instructions")))
         .get_matches();
 
-    println!("Google Advent of Code 2019");
+    println!("Advent of Code 2019");
 
     match matches.subcommand_name() {
         Some("day1a") => {
