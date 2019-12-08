@@ -29,6 +29,12 @@ fn main() {
                 .required(true)
                 .index(1)
                 .help("Path to file with intcode instructions")))
+        .subcommand(SubCommand::with_name("day2b")
+            .about("Day two, part B")
+            .arg(Arg::with_name("CODE_FILE")
+                .required(true)
+                .index(1)
+                .help("Path to file with intcode instructions")))
         .get_matches();
 
     println!("Advent of Code 2019");
@@ -84,6 +90,41 @@ fn main() {
             };
             intcode::run(&mut code);
             println!("Value at position zero is {}", code[0])
+        }
+        Some("day2b") => {
+            let file_name = matches
+                .subcommand_matches("day2b")
+                .unwrap()
+                .value_of("CODE_FILE")
+                .unwrap();
+            let file_path = Path::new(file_name);
+
+            println!("Executing day two, part B on file {}", file_path.display());
+
+            let code = match intcode::load(file_path) {
+                Err(why) => panic!("Failed to load code: {}", why),
+                Ok(total) => total,
+            };
+            for noun in 0..100 {
+                for verb in 0..100 {
+                    let mut instance = code.to_vec();
+                    instance[1] = noun;
+                    instance[2] = verb;
+                    let exit_code = intcode::run(&mut instance);
+                    if exit_code != 99 {
+                        panic!("Found error code {}", exit_code);
+                    }
+
+                    const EXPECTED:u32 = 19690720;
+                    if instance[0] == EXPECTED {
+                        println!("Found solution. Noun {}, verb {}. Puzzle answer {}",
+                                 noun,
+                                 verb,
+                                 100 * noun + verb);
+                        return;
+                    }
+                }
+            }
         }
         None => println!("Please use a command"),
         _ => unreachable!()

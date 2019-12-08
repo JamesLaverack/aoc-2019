@@ -25,7 +25,6 @@ pub fn run(code :&mut Vec<u32>) -> u32 {
 
 fn step(code :&mut Vec<u32>, program_counter :usize) -> Result<(), u32> {
     let opcode = code[program_counter];
-
     let f :fn(u32, u32) -> u32 = match opcode {
         1 => |a, b| a + b,
         2 => |a, b| a * b,
